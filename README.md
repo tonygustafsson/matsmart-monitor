@@ -7,3 +7,10 @@ Using NodeJS to scrap matsmart.se and send facebook messages to certain users wh
 2. Add your username and password to Facebook in ./credentials.json
 3. Run "npm install"
 4. Run "npm start"
+
+## Dependencies
+* node-fetch: For fetching HTML on all categories
+* fs: For reading file data
+* sqlite3: For storing product data (for comparison)
+* cheerio: For selecting data from HTML chunks
+* facebook-chat-api: For sending messages through faceobook.
