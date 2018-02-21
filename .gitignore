@@ -1,0 +1,4 @@
+credentials.json
+appstate.json
+matsmart.sqlite
+/node_modules/**/*
