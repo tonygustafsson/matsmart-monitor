@@ -150,7 +150,7 @@ const scrapeSites = products => {
 
         if (message === '') return;
 
-        //sendFBMessage(message);
+        sendFBMessage(message);
     }
     catch (err) {
         console.log(err);
