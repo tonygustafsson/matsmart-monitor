@@ -34,10 +34,26 @@ const db = new sqlite3.Database('matsmart.sqlite'),
            'https://www.matsmart.se/husdjur',
       ];
 
+global.message = '';
+
 const sendFBMessage = (msg) => {
     if (fs.existsSync('appstate.json')) {
         login({appState: JSON.parse(fs.readFileSync('appstate.json', 'utf8'))}, (err, api) => {
-            if(err) return console.error(err);
+            if (err) {
+                fs.unlinkSync('appstate.json');
+
+                login({ email: credentials.userName, password: credentials.password }, (err, api) => {
+                    if(err) return console.error(err);
+            
+                    fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
+
+                    var userId = api.getCurrentUserID();
+        
+                    api.sendMessage(msg, userId);
+                });
+
+                console.error(err);
+            }
     
             var userId = api.getCurrentUserID();
         
@@ -46,9 +62,13 @@ const sendFBMessage = (msg) => {
     }
     else {
         login({ email: credentials.userName, password: credentials.password }, (err, api) => {
-            if(err) return console.error(err);
+            if(err) console.error(err);
     
             fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
+
+            var userId = api.getCurrentUserID();
+        
+            api.sendMessage(msg, userId);
         });
     }
 };
@@ -93,8 +113,6 @@ const readDatabase = new Promise((resolve, reject) => {
 const scrapeSites = products => {
     if (testMode) return 'ok';
 
-    var message = '';
-
     try {
         for (let i = 0; i < urlsToScrape.length; i++) {
             fetch(urlsToScrape[i], { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36' } })
@@ -128,7 +146,7 @@ const scrapeSites = products => {
                                         '${productName}', '${productUrl}', '${currentPrice}', '${normalPrice}'
                                     )`;
                     }
-                    else if (currentPrice < thisProduct.currentPrice) {
+                    else if (currentPrice < thisProduct.price) {
                         console.log(`Price reduction detected: ${urlPrefix}${productUrl}. It changed from ${thisProduct.price} SEK to ${currentPrice} SEK (${discount}% dicount)`);
                         message += `Price reduction detected: ${urlPrefix}${productUrl}. It changed from ${thisProduct.price} SEK to ${currentPrice} SEK (${discount}% dicount)\r\n`;
 
@@ -148,9 +166,9 @@ const scrapeSites = products => {
             });
         }
 
-        if (message === '') return;
+        if (global.message === '') return;
 
-        sendFBMessage(message);
+        sendFBMessage(global.message);
     }
     catch (err) {
         console.log(err);
