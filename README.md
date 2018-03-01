@@ -13,4 +13,4 @@ Using NodeJS to scrap matsmart.se and send facebook messages to certain users wh
 * fs: For reading file data
 * sqlite3: For storing product data (for comparison)
 * cheerio: For selecting data from HTML chunks
-* facebook-chat-api: For sending messages through Facebook.
+* nodemailer: For sending emails from node.
