@@ -1,11 +1,11 @@
 'use strict';
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
-const login = require("facebook-chat-api");
-const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
+const   fetch = require('node-fetch'),
+        cheerio = require('cheerio'),
+        fs = require('fs'),
+        sqlite3 = require('sqlite3').verbose(),
+        nodemailer = require('nodemailer');
 
-const credentials = require('./credentials.json');
+const mailSettings = require('./mailSettings.json');
 
 const db = new sqlite3.Database('matsmart.sqlite'),
       query = "SELECT name, url, price, normalPrice FROM Products",
@@ -36,41 +36,34 @@ const db = new sqlite3.Database('matsmart.sqlite'),
 
 global.message = '';
 
-const sendFBMessage = (msg) => {
-    if (fs.existsSync('appstate.json')) {
-        login({appState: JSON.parse(fs.readFileSync('appstate.json', 'utf8'))}, (err, api) => {
-            if (err) {
-                fs.unlinkSync('appstate.json');
-
-                login({ email: credentials.userName, password: credentials.password }, (err, api) => {
-                    if(err) return console.error(err);
-            
-                    fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
-
-                    var userId = api.getCurrentUserID();
-        
-                    api.sendMessage(msg, userId);
-                });
-
-                console.error(err);
+const sendMail = (msg) => {
+    nodemailer.createTestAccount((err, account) => {
+        let transporter = nodemailer.createTransport({
+            host: mailSettings.host,
+            port: mailSettings.port,
+            secure: mailSettings.secure,
+            auth: {
+                user: mailSettings.userName,
+                pass: mailSettings.password,
             }
-    
-            var userId = api.getCurrentUserID();
-        
-            api.sendMessage(msg, userId);
         });
-    }
-    else {
-        login({ email: credentials.userName, password: credentials.password }, (err, api) => {
-            if(err) console.error(err);
     
-            fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
+        let mailOptions = {
+            from: mailSettings.from,
+            to: mailSettings.to, 
+            subject: mailSettings.subject,
+            text: msg,
+            html: msg,
+        };
+    
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
 
-            var userId = api.getCurrentUserID();
-        
-            api.sendMessage(msg, userId);
+            console.log('Message sent: %s', info.messageId);
         });
-    }
+    });
 };
 
 db.on("error", (error) => {
@@ -168,7 +161,7 @@ const scrapeSites = products => {
 
         if (global.message === '') return;
 
-        sendFBMessage(global.message);
+        sendMail(global.message);
     }
     catch (err) {
         console.log(err);

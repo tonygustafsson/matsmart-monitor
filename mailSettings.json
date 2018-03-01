@@ -1,0 +1,10 @@
+{
+    "host": "xxx",
+    "port": 587,
+    "secure": false,
+    "userName": "xxx@xxx.com",
+    "password": "xxx",
+    "from": "'MatSmart Monitor' <xxx@xxx.com>",
+    "to": "xxx@xxx.com",
+    "subject": "Changes in products at MatSmart!"
+}
