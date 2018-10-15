@@ -1,19 +1,18 @@
 {
-  "name": "matsmart-monitor",
-  "version": "0.0.1",
-  "description": "A system for monitoring matsmart.se",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "author": "Tony Gustafsson",
-  "license": "ISC",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
-    "fs": "0.0.1-security",
-    "node-fetch": "^2.0.0",
-    "nodemailer": "^4.6.0",
-    "sqlite3": "^3.1.13"
-  }
+    "name": "matsmart-monitor",
+    "version": "0.0.1",
+    "description": "A system for monitoring matsmart.se",
+    "main": "scrape.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node scrape.js"
+    },
+    "author": "Tony Gustafsson",
+    "license": "ISC",
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.2",
+        "node-fetch": "^2.0.0",
+        "nodemailer": "^4.6.0",
+        "sqlite3": "^3.1.13"
+    }
 }
