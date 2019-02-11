@@ -2,3 +2,4 @@ matsmart.sqlite
 matsmart.sqlite-journal
 /node_modules/**/*
 mailSettings.json
+.package-lock.json
